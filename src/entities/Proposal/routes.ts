@@ -343,7 +343,8 @@ export async function createProposal(data: Pick<ProposalAttributes, 'type' | 'us
     }, DISCOURSE_AUTH)
   } catch (err) {
     dropSnapshotProposal(SNAPSHOT_SPACE, snapshotProposal.ipfsHash)
-    throw new RequestError(`Forum error: ${err.body.errors.join(', ')}`, RequestError.InternalServerError, err)
+    const errors = err && typeof err === 'object' ? (err as any)?.body?.errors || [] : []
+    throw new RequestError(`Forum error: ${errors.join(', ')}`, RequestError.InternalServerError, err)
   }
 
   const forum_url = forumUrl({ discourse_topic_slug: discourseProposal.topic_slug, discourse_topic_id: discourseProposal.topic_id })
